@@ -15,6 +15,25 @@ class NewVisitorTest(LiveServerTestCase):
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text,[row.text for row in rows])
 
+    def test_layout_and_styling(self):
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024,768)
+
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x']+ inputbox.size['width']/2,
+            512,
+            delta=10  
+        )  
+
+        inputbox.send_keys('testing\n')
+        inputbox = self.browser.find_element_by_id('id_new_item')  
+        self.assertAlmostEqual(
+            inputbox.location['x']+ inputbox.size['width']/2,
+            512,
+            delta=10  
+        )  
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         # check the home page
         self.browser.get(self.live_server_url)
@@ -74,7 +93,7 @@ class NewVisitorTest(LiveServerTestCase):
         
         # Again there is no trace of Edith's list
         page_text = self.browser.find_element_by_tag_name('body').text
-        self.asserNotIn('Buy peacock feathers', page_text)
+        self.assertNotIn('Buy peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
 
         # satisfied, they both go back to sleep
