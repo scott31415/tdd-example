@@ -3,8 +3,12 @@ from fabric.api import env, local, run
 import random
 
 REPO_URL = 'https://github.com/scott31415/tdd-example.git'
+env.key_filename = "C:\Users\Scott\projects" + "\\" + "firstproject.pem"
+env.hosts=["ubuntu@ec2-54-191-147-255.us-west-2.compute.amazonaws.com"]
+env.user=['ubuntu']
 
 def deploy():
+    #site_folder = '/home/%s/sites/%s' % (env.user, env.host)
     site_folder = '/home/%s/sites/%s' % (env.user, env.host)
     source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(site_folder)
@@ -15,8 +19,9 @@ def deploy():
     _update_database(source_folder)
 
 def _create_directory_structure_if_necessary(site_folder):
-    for subfolder in ('database','static','virtualenv','source'):
-        run('mkdir -p %s/%s' % (site_folder,source_folder))
+    #for subfolder in ('database','static','virtualenv','source'):
+    for subfolder in ('database','static','source'):
+        run('mkdir -p %s/%s' % (site_folder,subfolder))
 
 def _get_latest_source(source_folder):
     if exists(source_folder + '/.git'):
@@ -27,7 +32,7 @@ def _get_latest_source(source_folder):
     run('cd %s && git reset --hard %s' % (source_folder,current_commit))
 
 def _update_settings(source_folder, site_name):
-    settings_path = source_folder + '/superlists/setting.py'
+    settings_path = source_folder + '/superlists/settings.py'
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     sed(settings_path,
         'ALLOWED_HOSTS =.+$',
@@ -45,7 +50,7 @@ def _update_virtualenv(source_folder):
     virtualenv_folder = source_folder + '/../virtualenv'
     if not exists(virtualenv_folder + '/bin/pip'):
         #run('virtualenv --python=python3 %s' % (virtualenv_folder,))
-        run('/home/ubuntu/anaconda3/bin/conda create -p %s python=3.4.1' % (virtualenv_folder,))
+        run('/home/ubuntu/anaconda3/bin/conda create -p %s python=3.4.1 pip' % (virtualenv_folder,))
     run('%s/bin/pip install -r %s/requirements.txt' % (
             virtualenv_folder, source_folder 
     ))
