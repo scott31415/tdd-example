@@ -1,4 +1,5 @@
 from .base import FunctionalTest
+import time
 
 class ItemValidationTest(FunctionalTest):
     def get_error_element(self):
@@ -51,7 +52,8 @@ class ItemValidationTest(FunctionalTest):
 
         # she starts typing inbox to clear the error
         self.get_item_input_box().send_keys('a')
-        
+        time.sleep(10)
+ 
         # she is pleased to see that the error messages disappear
         error = self.get_error_element()
         self.assertFalse(error.is_displayed())  
